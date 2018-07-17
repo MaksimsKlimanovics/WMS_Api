@@ -3,10 +3,18 @@
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>TodoApp</AssemblyName>
+    <AssemblyName>WMS Api</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>TodoApp</PackageId>
+    <PackageId>WMS</PackageId>
+    <ApplicationIcon>Blackvariant-Button-Ui-Microsoft-Office-Apps-Microsoft-Document-Connection.ico</ApplicationIcon>
+    <NeutralLanguage>lv-LV</NeutralLanguage>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Navisoft.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Inventory.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="App.config" />

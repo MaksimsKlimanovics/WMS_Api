@@ -58,7 +58,7 @@ namespace WMS_Api.Controllers
                                              ,[default_bin] [nvarchar](20)
                                             )"
                                     );
-            cmd.Parameters.AddWithValue("code", req);
+            cmd.Parameters.AddWithValue("warehouse", req);
             await SqlCommand.ExecuteNonQuery(cmd);
         }
 
