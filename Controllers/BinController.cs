@@ -29,7 +29,8 @@ namespace WMS_Api.Controllers
            , Response.Body, "[]");
         }
         
-        // GET api/bin/test
+        // GET api/bin/test 
+        // Just checking comment line
         [HttpGet("{warehouse}/{bin}")]
         public async Task Get(string warehouse, string bin)
         {
