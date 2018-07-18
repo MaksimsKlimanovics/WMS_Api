@@ -30,7 +30,7 @@ namespace WMS_Api.Controllers
         }
         
         // GET api/bin/test 
-        // Just checking comment line
+        // Just checking comment line.
         [HttpGet("{warehouse}/{bin}")]
         public async Task Get(string warehouse, string bin)
         {
