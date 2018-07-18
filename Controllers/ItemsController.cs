@@ -25,16 +25,16 @@ namespace WMS_Api.Controllers
         [HttpGet]
         public async Task Get()
         {
-            await SqlPipe.Stream("SELECT [no.] as [no]" +
-                                    ", [additional_no.] as [add_no]" +
+            await SqlPipe.Stream("SELECT [no]" +
+                                    ", [additional_no]" +
                                     ", [description]" +
                                     ", [base_uom]" +
-                                    ", [vendor_num.] as [vend_num]" +
-                                    ", [vendor_item_num.] as [vend_itm_num]" +
+                                    ", [vendor_num]" +
+                                    ", [vendor_item_num]" +
                                     ", [gross_weight]" +
                                     ", [net_weight]" +
-                                    ", [barcode_no.2] as [barcode_no_2]" +
-                                    ", [barcode_no.3] as [barcode_no_3]" +
+                                    ", [barcode_no_2]" +
+                                    ", [barcode_no_3]" +
                                  "FROM [dbo].[n_item] FOR JSON PATH"
                 , Response.Body, "[]");
         }
@@ -43,17 +43,17 @@ namespace WMS_Api.Controllers
         [HttpGet("{no}")]
         public async Task Get(string no)
         {
-            var cmd = new SqlCommand(@"SELECT [no.] as [no]
-                                                ,[additional_no.] as [additional_no]
+            var cmd = new SqlCommand(@"SELECT [no] as [no]
+                                                ,[additional_no]
                                                 ,[description]
                                                 ,[base_uom]
-                                                ,[vendor_num.] as [vendor_num]
-                                                ,[vendor_item_num.] as [vendor_item_num]
+                                                ,[vendor_num]
+                                                ,[vendor_item_num]
                                                 ,[gross_weight]
                                                 ,[net_weight]
-                                                ,[barcode_no.2] as [barcode_no_2]
-                                                ,[barcode_no.3] as [barcode_no_3]
-                                       FROM [dbo].[n_item] where [no.] = @no FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
+                                                ,[barcode_no_2]
+                                                ,[barcode_no_3]
+                                       FROM [dbo].[n_item] where [no] = @no FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("no", no.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
@@ -67,12 +67,12 @@ namespace WMS_Api.Controllers
                                         @"insert into [dbo].[n_item]
                                         select *
                                         from OPENJSON(@item)
-                                        WITH([no_] [nvarchar](20),
-	                                            [additional_no_] [nvarchar](20),
+                                        WITH([no] [nvarchar](20),
+	                                            [additional_no] [nvarchar](20),
 	                                            [description] [nvarchar](50),
 	                                            [base_uom] [nvarchar](10),
-	                                            [vendor_num_] [nvarchar](20),
-	                                            [vendor_item_num_] [nvarchar](20),
+	                                            [vendor_num] [nvarchar](20),
+	                                            [vendor_item_num] [nvarchar](20),
 	                                            [gross_weight] [decimal](38, 20),
 	                                            [net_weight] [decimal](38, 20),
 	                                            [barcode_no_2] [nvarchar](20),

@@ -21,3 +21,25 @@ CREATE TABLE [dbo].[n_worker](
 ) ON [PRIMARY]
 
 GO
+
+CREATE TABLE [dbo].[n_bin](
+	[warehouse_code] [nvarchar](10) NOT NULL,
+	[code] [nvarchar](20) NOT NULL,
+	[description] [nvarchar](50) NOT NULL,
+	[barcode] [nvarchar](50) NOT NULL
+ CONSTRAINT [n_bin$0] PRIMARY KEY CLUSTERED 
+(
+	[warehouse_code] ASC,
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+select [warehouse_code]
+                                             ,[code]
+                                             ,[description]
+                                             ,[barcode] from [dbo].[n_bin]
+								select [warehouse_code]
+                                    ,[code]
+                                    ,[description]
+                                    ,[barcode] from [dbo].[n_bin] FOR xml PATH

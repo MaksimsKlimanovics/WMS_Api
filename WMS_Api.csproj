@@ -8,7 +8,7 @@
     <PackageId>WMS</PackageId>
     <ApplicationIcon>Blackvariant-Button-Ui-Microsoft-Office-Apps-Microsoft-Document-Connection.ico</ApplicationIcon>
     <NeutralLanguage>lv-LV</NeutralLanguage>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Navisoft.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 

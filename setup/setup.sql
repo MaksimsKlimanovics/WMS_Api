@@ -18,4 +18,4 @@ VALUES
 ('Get new samples','Go to github and download new samples', 0, '2016-06-02'),
 ('Try new samples','Install new Management Studio to try samples', 0, '2016-06-02')
 
-Select * from n_worker
+Select * from n_item
