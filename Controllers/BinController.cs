@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Belgrade.SqlClient;
 using System.Data.SqlClient;
@@ -14,7 +11,7 @@ namespace WMS_Api.Controllers
     {
         private readonly IQueryPipe SqlPipe;
         private readonly ICommand SqlCommand;
-
+        
         public WhsBinController(ICommand sqlCommand, IQueryPipe sqlPipe)
         {
             this.SqlCommand = sqlCommand;
@@ -31,16 +28,18 @@ namespace WMS_Api.Controllers
                                     ",[barcode] from [dbo].[n_bin] FOR JSON PATH"
            , Response.Body, "[]");
         }
-
+        
         // GET api/bin/test
-        [HttpGet("{barcode}")]
-        public async Task Get(string barcode)
+        [HttpGet("{warehouse}/{bin}")]
+        public async Task Get(string warehouse, string bin)
         {
+            
             var cmd = new SqlCommand(@"select [warehouse_code]
                                              ,[code]
                                              ,[description]
-                                             ,[barcode] from [dbo].[n_bin] where [barcode] = @barcode FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
-            cmd.Parameters.AddWithValue("barcode", barcode.ToUpper());
+                                             ,[barcode] from [dbo].[n_bin] where [warehouse_code] = @whouse and [code] = @bin FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("whouse", warehouse.ToUpper());
+            cmd.Parameters.AddWithValue("bin", bin.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
@@ -64,11 +63,12 @@ namespace WMS_Api.Controllers
         }
 
         // DELETE api/bin/test
-        [HttpDelete("{barcode}")]
-        public async Task Delete(string barcode)
+        [HttpDelete("{warehouse}/{bin}")]
+        public async Task Delete(string warehouse, string bin)
         {
-            var cmd = new SqlCommand(@"delete from n_bin where barcode = @barcode");
-            cmd.Parameters.AddWithValue("barcode", barcode.ToUpper());
+            var cmd = new SqlCommand(@"delete from n_bin where [warehouse_code] = @warehouse and [code] = @bin");
+            cmd.Parameters.AddWithValue("warehouse", warehouse.ToUpper());
+            cmd.Parameters.AddWithValue("bin", warehouse.ToUpper());
             await SqlCommand.ExecuteNonQuery(cmd);
         }
     }
