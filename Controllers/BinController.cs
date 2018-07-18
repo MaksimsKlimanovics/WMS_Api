@@ -21,7 +21,7 @@ namespace WMS_Api.Controllers
             this.SqlPipe = sqlPipe;
         }
 
-        // GET api/warehouse
+        // GET api/bin
         [HttpGet]
         public async Task Get()
         {
@@ -32,7 +32,7 @@ namespace WMS_Api.Controllers
            , Response.Body, "[]");
         }
 
-        // GET api/warehouse/test
+        // GET api/bin/test
         [HttpGet("{barcode}")]
         public async Task Get(string barcode)
         {
@@ -44,7 +44,7 @@ namespace WMS_Api.Controllers
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
-        // POST api/warehouse
+        // POST api/bin
         [HttpPost]
         public async Task Post()
         {
@@ -63,7 +63,7 @@ namespace WMS_Api.Controllers
             await SqlCommand.ExecuteNonQuery(cmd);
         }
 
-        // DELETE api/warehouse/test
+        // DELETE api/bin/test
         [HttpDelete("{barcode}")]
         public async Task Delete(string barcode)
         {
