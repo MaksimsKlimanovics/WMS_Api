@@ -31,6 +31,7 @@ namespace WMS_Api.Controllers
                 ",[partner_code]" +
                 ",[partner_name]" +
                 ",[uid] " +
+                ",[status] " +
                 "FROM [dbo].[n_warehouse_document_header] FOR JSON PATH"
                 , Response.Body, "[]");
         }
@@ -48,12 +49,13 @@ namespace WMS_Api.Controllers
                                               ,[partner_code]
                                               ,[partner_name]
                                               ,[uid]
+                                              ,[status]
                                        FROM [dbo].[n_warehouse_document_header] where uid = @uid FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
-        // POST api/worker
+        // POST api/worker //[document_date] [datetime],
         [HttpPost]
         public async Task Post()
         {
@@ -71,7 +73,8 @@ namespace WMS_Api.Controllers
                                                 [partner_type] [nvarchar](20),
                                                 [partner_code] [nvarchar](20),
                                                 [partner_name] [nvarchar](100),
-                                                [uid] [nvarchar](20)
+                                                [uid] [nvarchar](100),
+                                                [status] [int]
                                             )"
                                     );
             cmd.Parameters.AddWithValue("docHdr", req);

@@ -31,7 +31,9 @@ namespace WMS_Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            const string ConnString = "Server = tcp:elektrikawms.database.windows.net,1433; Initial Catalog = ElektrikaWMS; Persist Security Info = False; User ID = navisoft@elektrikawms; Password =N@vi5oft2018; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;";
+            const string ConnString = "Server = tcp:elektrikawms.database.windows.net,1433; Initial Catalog = ElektrikaWMS; Persist Security Info = False; " +
+                "User ID = navisoft@elektrikawms; " +
+                "Password =N@vi5oft2018; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;";
             services.AddTransient<IQueryPipe>( _=> new QueryPipe(new SqlConnection(ConnString)));
             services.AddTransient<ICommand>( _=> new Command(new SqlConnection(ConnString)));
 
