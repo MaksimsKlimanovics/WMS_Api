@@ -18,13 +18,13 @@ namespace WMS_Api.Controllers
             this.SqlPipe = sqlPipe;
         }
 
-        // GET api/DocHdr
+        // GET api/DocLine
         [HttpGet]
         public async Task Get()
         {
             await SqlPipe.Stream("SELECT[line_no]" +
                 ",[document_type]" +
-                ",[document_no]" +
+                ",[document_no]" + 
                 ",[document_date]" +
                 ",[entry_state]" +
                 ",[item_no]" +
@@ -37,14 +37,16 @@ namespace WMS_Api.Controllers
                 ",[worker_code]" +
                 ",[warehouse_code]" +
                 ",[bin]" +
+                ",[org_bin]" +
                 ",[uid]" +
                 ",[unit_of_measure]" +
                 ",[status]" +
+                ",[add_line]" +
                 "FROM[dbo].[n_warehouse_document_line] FOR JSON PATH"
                 , Response.Body, "[]");
         }
 
-        // GET api/worker/TEST
+        // GET api/DocLine/uid
         [HttpGet("{uid}")]
         public async Task Get(string uid)
         {
@@ -63,15 +65,28 @@ namespace WMS_Api.Controllers
                                           ,[worker_code]
                                           ,[warehouse_code]
                                           ,[bin]
+                                          ,[org_bin]
                                           ,[uid]
                                           ,[unit_of_measure]
                                           ,[status]
+                                          ,[add_line]
                                       FROM [dbo].[n_warehouse_document_line] where uid = @uid FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
-        // POST api/worker
+        // GET api/worker/TEST
+        [HttpGet("exists/{uid}")]
+        public async Task Exists(string uid)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_warehouse_document_line] where [uid] =  @uid) 
+	then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("uid", uid.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
+        // POST api/DocLine
         [HttpPost]
         public async Task Post()
         {
@@ -82,7 +97,7 @@ namespace WMS_Api.Controllers
                                         from OPENJSON(@docLine)
                                         WITH(
                                              [line_no] [int],
-	                                         [document_type] [int],
+                                             [document_type] [int],   
 	                                         [document_no] [nvarchar](20),
 	                                         [document_date] [datetime],
 	                                         [entry_state] [int],
@@ -96,9 +111,11 @@ namespace WMS_Api.Controllers
 	                                         [worker_code] [nvarchar](20),
 	                                         [warehouse_code] [nvarchar](20),
 	                                         [bin] [nvarchar](20),
-	                                         [uid] [nvarchar](20),
+                                             [org_bin] [nvarchar](50),
+	                                         [uid] [nvarchar](100),
 	                                         [unit_of_measure] [nvarchar](20),
-	                                         [status] [int]
+	                                         [status] [int],
+                                             [add_line] [int]
                                             )"
                                     );
             cmd.Parameters.AddWithValue("docLine", req);

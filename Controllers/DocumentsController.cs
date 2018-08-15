@@ -55,6 +55,18 @@ namespace WMS_Api.Controllers
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
+        // GET api/dochdr/exists
+        [HttpGet("exists/{uid}")]
+        public async Task Exists(string uid)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_warehouse_document_header] where [uid] =  @uid) 
+	then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("uid", uid.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
+
         // POST api/worker //[document_date] [datetime],
         [HttpPost]
         public async Task Post()
@@ -89,6 +101,8 @@ namespace WMS_Api.Controllers
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
             await SqlCommand.ExecuteNonQuery(cmd);
         }
+
+
     }
 }
 
