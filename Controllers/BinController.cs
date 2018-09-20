@@ -44,6 +44,18 @@ namespace WMS_Api.Controllers
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
+        // GET api/bin/exists
+        [HttpGet("exists/{warehouse}/{bin}")]
+        public async Task Exists(string warehouse, string bin)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_bin] where [warehouse_code] = @whouse and [code] = @bin) 
+	                                   then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("whouse", warehouse.ToUpper());
+            cmd.Parameters.AddWithValue("bin", bin.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
         // POST api/bin
         [HttpPost]
         public async Task Post()
@@ -63,14 +75,17 @@ namespace WMS_Api.Controllers
             await SqlCommand.ExecuteNonQuery(cmd);
         }
 
-        // DELETE api/bin/test
+        // DELETE api/bin/deletee
         [HttpDelete("{warehouse}/{bin}")]
         public async Task Delete(string warehouse, string bin)
         {
-            var cmd = new SqlCommand(@"delete from n_bin where [warehouse_code] = @warehouse and [code] = @bin");
+            var cmd = new SqlCommand(@"delete from [dbo].[n_bin] where [warehouse_code] = @warehouse and [code] = @bin");
             cmd.Parameters.AddWithValue("warehouse", warehouse.ToUpper());
-            cmd.Parameters.AddWithValue("bin", warehouse.ToUpper());
+            cmd.Parameters.AddWithValue("bin", bin.ToUpper());
             await SqlCommand.ExecuteNonQuery(cmd);
         }
+
+       
+
     }
 }

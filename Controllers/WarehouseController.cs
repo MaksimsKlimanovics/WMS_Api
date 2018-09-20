@@ -41,6 +41,17 @@ namespace WMS_Api.Controllers
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
+        // GET api/warehouse/exists
+        [HttpGet("exists/{code}")]
+        public async Task Exists(string code)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_warehouse] where [Code] = @code) 
+	                                   then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("code", code.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
         // POST api/warehouse
         [HttpPost]
         public async Task Post()
@@ -63,7 +74,7 @@ namespace WMS_Api.Controllers
         [HttpDelete("{code}")]
         public async Task Delete(string code)
         {
-            var cmd = new SqlCommand(@"delete from n_warehouse where code = @code");
+            var cmd = new SqlCommand(@"delete from [dbo].[n_warehouse] where code = @code");
             cmd.Parameters.AddWithValue("code", code.ToUpper());
             await SqlCommand.ExecuteNonQuery(cmd);
         }

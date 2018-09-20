@@ -55,6 +55,17 @@ namespace WMS_Api.Controllers
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
+        // GET api/items/exists
+        [HttpGet("exists/{no}")]
+        public async Task Exists(string no)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_item] where [no] =  @no) 
+	                                   then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("no", no.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
         // POST api/items
         [HttpPost]
         public async Task Post()
@@ -84,7 +95,7 @@ namespace WMS_Api.Controllers
         [HttpDelete("{no}")]
         public async Task Delete(string no)
         {
-            var cmd = new SqlCommand(@"delete from n_item where [no.] = @no");
+            var cmd = new SqlCommand(@"delete from [dbo].[n_item] where [no] = @no");
             cmd.Parameters.AddWithValue("no", no.ToUpper());
             await SqlCommand.ExecuteNonQuery(cmd);
         }
