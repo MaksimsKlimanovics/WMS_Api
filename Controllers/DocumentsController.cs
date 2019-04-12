@@ -23,6 +23,7 @@ namespace WMS_Api.Controllers
         public async Task Get()
         {
             await SqlPipe.Stream("SELECT [document_type]" +
+                ",[transaction_no]" +
                 ",[document_no]" +
                 ",[document_date]" +
                 ",[worker_code]" +
@@ -31,7 +32,8 @@ namespace WMS_Api.Controllers
                 ",[partner_code]" +
                 ",[partner_name]" +
                 ",[uid] " +
-                ",[status] " +
+                ",[use_induvidual_bin] " +
+                ",[placed_bin] " +
                 "FROM [dbo].[n_warehouse_document_header] FOR JSON PATH"
                 , Response.Body, "[]");
         }
@@ -41,6 +43,7 @@ namespace WMS_Api.Controllers
         public async Task Get(string uid)
         {
             var cmd = new SqlCommand(@"SELECT [document_type]
+                                              ,[transaction_no]
                                               ,[document_no]
                                               ,[document_date]
                                               ,[worker_code]
@@ -50,6 +53,8 @@ namespace WMS_Api.Controllers
                                               ,[partner_name]
                                               ,[uid]
                                               ,[status]
+                                              ,[use_induvidual_bin]
+                                              ,[placed_bin]
                                        FROM [dbo].[n_warehouse_document_header] where uid = @uid FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
@@ -60,7 +65,7 @@ namespace WMS_Api.Controllers
         public async Task Exists(string uid)
         {
             var cmd = new SqlCommand(@"select (case when exists 
-                                        (SELECT * from [dbo].[n_warehouse_document_header] where [uid] =  @uid) 
+                                        (SELECT * from [dbo].[n_warehouse_document_header] where [transaction_no] =  @uid) 
 	then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
@@ -86,7 +91,10 @@ namespace WMS_Api.Controllers
                                                 [partner_code] [nvarchar](20),
                                                 [partner_name] [nvarchar](100),
                                                 [uid] [nvarchar](100),
-                                                [status] [int]
+                                                [status] [int],
+                                                [transaction_no][nvarchar](20),
+                                                [use_induvidual_bin][int],
+                                                [placed_bin][nvarchar](50)
                                             )"
                                     );
             cmd.Parameters.AddWithValue("docHdr", req);

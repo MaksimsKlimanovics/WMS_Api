@@ -24,6 +24,7 @@ namespace WMS_Api.Controllers
         {
             await SqlPipe.Stream("SELECT[line_no]" +
                 ",[document_type]" +
+                ",[transaction_no]" +
                 ",[document_no]" + 
                 ",[document_date]" +
                 ",[entry_state]" +
@@ -42,6 +43,7 @@ namespace WMS_Api.Controllers
                 ",[unit_of_measure]" +
                 ",[status]" +
                 ",[add_line]" +
+                ",[last_update]" + 
                 "FROM[dbo].[n_warehouse_document_line] FOR JSON PATH"
                 , Response.Body, "[]");
         }
@@ -52,6 +54,7 @@ namespace WMS_Api.Controllers
         {
             var cmd = new SqlCommand(@"SELECT [line_no]
                                           ,[document_type]
+                                          ,[transaction_no]
                                           ,[document_no]
                                           ,[document_date]
                                           ,[entry_state]
@@ -76,17 +79,19 @@ namespace WMS_Api.Controllers
         }
 
         // GET api/worker/TEST
-        [HttpGet("exists/{uid}")]
-        public async Task Exists(string uid)
+        [HttpGet("exists/{uid}/{transaction}")]
+        public async Task Exists(string uid, string transaction)
         {
             var cmd = new SqlCommand(@"select (case when exists 
-                                        (SELECT * from [dbo].[n_warehouse_document_line] where [uid] =  @uid) 
-	then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
+                                        (SELECT * from [dbo].[n_warehouse_document_line] where [transaction_no] = @transaction and [uid] =  @uid) 
+	            then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("uid", uid.ToUpper());
+            cmd.Parameters.AddWithValue("transaction", transaction.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
 
         // POST api/DocLine
+       
         [HttpPost]
         public async Task Post()
         {
@@ -108,6 +113,7 @@ namespace WMS_Api.Controllers
 	                                         [comment] [nvarchar](100),
 	                                         [processed_quantity] [decimal](38, 20),
 	                                         [processed_date_time] [datetime],
+                                             [last_update] [datetime],
 	                                         [worker_code] [nvarchar](20),
 	                                         [warehouse_code] [nvarchar](20),
 	                                         [bin] [nvarchar](20),
@@ -115,7 +121,9 @@ namespace WMS_Api.Controllers
 	                                         [uid] [nvarchar](100),
 	                                         [unit_of_measure] [nvarchar](20),
 	                                         [status] [int],
-                                             [add_line] [int]
+                                             [add_line] [int],
+                                             [transaction_no] [nvarchar](20),
+                                             [inventory_document] [nvarchar](20)
                                             )"
                                     );
             cmd.Parameters.AddWithValue("docLine", req);

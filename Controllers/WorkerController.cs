@@ -23,13 +23,9 @@ namespace WMS_Api.Controllers
         public async Task Get()
         {
             await SqlPipe.Stream("SELECT [id]" +
-                                        ", [type]" +
                                         ", [name]" +
-                                        ", [address]" +
-                                        ", [city]" +
                                         ", [phone]" +
                                         ", [email]" +
-                                        ", [skype]" +
                                         ", [location] " +
                                  "FROM [dbo].[n_worker] FOR JSON PATH"
                 , Response.Body, "[]");
@@ -40,15 +36,22 @@ namespace WMS_Api.Controllers
         public async Task Get(string id)
         {
             var cmd = new SqlCommand(@"select [id]
-                                              , [type]
                                               , [name]
-                                              , [address]
-                                              , [city]
                                               , [phone]
                                               , [email]
-                                              , [skype]
                                               , [location]
                                        from [dbo].[n_worker] where id = @id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER");
+            cmd.Parameters.AddWithValue("id", id.ToUpper());
+            await SqlPipe.Stream(cmd, Response.Body, "{}");
+        }
+
+        // GET api/worker/exists
+        [HttpGet("exists/{id}")]
+        public async Task Exists(string id)
+        {
+            var cmd = new SqlCommand(@"select (case when exists 
+                                        (SELECT * from [dbo].[n_worker] where [id] = @id) 
+	                                   then 'true' else 'false' end) as [status] for json path, WITHOUT_ARRAY_WRAPPER");
             cmd.Parameters.AddWithValue("id", id.ToUpper());
             await SqlPipe.Stream(cmd, Response.Body, "{}");
         }
@@ -63,13 +66,9 @@ namespace WMS_Api.Controllers
                                         select *
                                         from OPENJSON(@worker)
                                         WITH([id] [varchar](10)
-                                             ,[type] [varchar](15)
                                              ,[name] [varchar](50)
-                                             ,[address] [varchar](50)
-                                             ,[city] [varchar](30)
                                              ,[phone] [varchar](30)
                                              ,[email] [varchar](80)
-                                             ,[skype] [varchar](50)
                                              ,[location] [varchar](20)
                                             )"
                                     );
